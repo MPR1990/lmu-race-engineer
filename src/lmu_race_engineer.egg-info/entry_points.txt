@@ -1,2 +1,0 @@
-[console_scripts]
-lmu-race-engineer = lmu_race_engineer.app:main

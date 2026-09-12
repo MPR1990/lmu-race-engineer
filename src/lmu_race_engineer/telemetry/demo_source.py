@@ -32,7 +32,7 @@ class DemoTelemetrySource(TelemetrySource):
             lap_time = lap_progress * self.lap_time_seconds
             overheating = index >= 55
             yield TelemetrySnapshot(
-                timestamp=start + timedelta(seconds=index),
+                timestamp=start + timedelta(seconds=index * self.poll_interval_seconds),
                 lap_number=lap_number,
                 lap_distance_fraction=lap_progress,
                 lap_time_seconds=lap_time,

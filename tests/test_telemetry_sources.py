@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-import itertools
 import unittest
 
 from lmu_race_engineer.telemetry import DemoTelemetrySource, RestApiClient, RestApiTelemetrySource
@@ -52,6 +51,7 @@ class TelemetrySourceTest(unittest.TestCase):
 
         self.assertEqual(3, len(samples))
         self.assertEqual([0.25, 0.25], sleeps)
+        self.assertEqual(0.25, (samples[1].timestamp - samples[0].timestamp).total_seconds())
 
     def test_rest_source_sleeps_between_polls(self) -> None:
         client = FakeRestApiClient()

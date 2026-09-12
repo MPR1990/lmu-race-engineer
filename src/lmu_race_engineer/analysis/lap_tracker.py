@@ -36,6 +36,7 @@ class LapTracker:
             self._lap_start_fuel = snapshot.fuel_liters
             self._lap_speed_samples.append(snapshot.speed_kph)
         elif snapshot.lap_number < self._last_lap_number:
+            self.completed_laps = []
             self._last_lap_number = snapshot.lap_number
             self._lap_start_fuel = snapshot.fuel_liters
             self._lap_speed_samples = [snapshot.speed_kph]

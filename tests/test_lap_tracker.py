@@ -58,6 +58,7 @@ class LapTrackerTest(unittest.TestCase):
 
         self.assertIsNone(analysis.last_lap)
         self.assertEqual([], tracker.completed_laps)
+        self.assertIsNone(analysis.best_lap)
         self.assertEqual(1, analysis.current_lap_number)
         self.assertEqual([150.0], tracker._lap_speed_samples)
 

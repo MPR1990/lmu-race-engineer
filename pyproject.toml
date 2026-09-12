@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lmu-race-engineer"
+version = "0.1.0"
+description = "Race engineer desktop app for Le Mans Ultimate telemetry and setup guidance."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyttsx3==2.99",
+]
+
+[project.scripts]
+lmu-race-engineer = "lmu_race_engineer.app:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -77,8 +77,11 @@ class LapTracker:
             relevant = self.completed_laps[-3:]
             rolling = sum(lap.lap_time_seconds for lap in relevant) / len(relevant)
         estimated_laps_remaining = None
-        if self.completed_laps:
-            avg_fuel = sum(lap.fuel_used_liters for lap in self.completed_laps[-3:]) / min(3, len(self.completed_laps))
+        fuel_samples = [lap.fuel_used_liters for lap in self.completed_laps[-3:]]
+        if self._lap_start_fuel is not None:
+            fuel_samples.append(max(0.0, self._lap_start_fuel - snapshot.fuel_liters))
+        if fuel_samples:
+            avg_fuel = sum(fuel_samples) / len(fuel_samples)
             if avg_fuel > 0:
                 estimated_laps_remaining = snapshot.fuel_liters / avg_fuel
         delta = None

@@ -46,6 +46,7 @@ class SessionStore:
     def close(self) -> None:
         if self._pending_writes:
             self.connection.commit()
+            self._pending_writes = 0
         self.connection.close()
 
     def record_snapshot(self, snapshot: TelemetrySnapshot) -> None:

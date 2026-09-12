@@ -15,7 +15,7 @@ class RestApiClient:
         self.base_url = base_url.rstrip("/")
         self.request_timeout_seconds = request_timeout_seconds
 
-    def get_session_summary(self) -> dict[str, str]:
+    def get_session_summary(self) -> dict[str, object]:
         return self._get_json("/session")
 
     def get_live_telemetry(self) -> dict[str, object]:

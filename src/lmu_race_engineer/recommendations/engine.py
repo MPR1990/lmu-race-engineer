@@ -50,7 +50,10 @@ class SetupRecommendationEngine:
                 Recommendation(
                     category="live",
                     title="Increase traction control",
-                    reason="Repeated wheelspin events suggest raising traction control one step.",
+                    reason=(
+                        f"Repeated wheelspin events suggest raising traction control one step from "
+                        f"the current level {snapshot.traction_control_level}."
+                    ),
                     confidence=0.76,
                     priority="high",
                     action_timing="change_now",
@@ -61,7 +64,10 @@ class SetupRecommendationEngine:
                 Recommendation(
                     category="live",
                     title="Increase ABS or reduce brake bias",
-                    reason="Repeated lockups point to a braking stability issue.",
+                    reason=(
+                        f"Repeated lockups point to a braking stability issue with ABS {snapshot.abs_level} "
+                        f"and brake bias at {snapshot.brake_bias_percent:.1f}%."
+                    ),
                     confidence=0.72,
                     priority="medium",
                     action_timing="change_now",

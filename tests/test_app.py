@@ -16,6 +16,7 @@ class AppSourceSelectionTest(unittest.TestCase):
         source = create_source(config)
 
         self.assertIsInstance(source, DemoTelemetrySource)
+        self.assertEqual(180, source.samples)
         self.assertEqual(0.25, source.poll_interval_seconds)
 
     def test_shared_memory_mode_returns_shared_memory_source(self) -> None:

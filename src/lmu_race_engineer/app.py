@@ -5,9 +5,10 @@ from queue import Empty, Queue
 import threading
 from pathlib import Path
 
+from lmu_race_engineer.analysis import AnalysisSnapshot, LapTracker
 from lmu_race_engineer.alerts import AlertManager, VoiceAlertEngine
-from lmu_race_engineer.analysis import LapTracker
 from lmu_race_engineer.config import AppConfig
+from lmu_race_engineer.models import Recommendation, TelemetrySnapshot, VoiceAlert
 from lmu_race_engineer.recommendations import SetupRecommendationEngine
 from lmu_race_engineer.storage import SessionStore
 from lmu_race_engineer.telemetry import (
@@ -15,11 +16,17 @@ from lmu_race_engineer.telemetry import (
     RestApiClient,
     RestApiTelemetrySource,
     SharedMemoryTelemetrySource,
+    TelemetrySource,
 )
 from lmu_race_engineer.ui import DashboardState
 
 
-def build_dashboard_state(snapshot, analysis, recommendations, alerts) -> DashboardState:
+def build_dashboard_state(
+    snapshot: TelemetrySnapshot,
+    analysis: AnalysisSnapshot,
+    recommendations: list[Recommendation],
+    alerts: list[VoiceAlert],
+) -> DashboardState:
     delta_text = "-"
     if analysis.current_delta_to_best_seconds is not None:
         delta_text = f"{analysis.current_delta_to_best_seconds:+.2f}s"
@@ -37,7 +44,7 @@ def build_dashboard_state(snapshot, analysis, recommendations, alerts) -> Dashbo
     )
 
 
-def create_source(config: AppConfig):
+def create_source(config: AppConfig) -> TelemetrySource:
     if config.telemetry.mode == "shared_memory":
         return SharedMemoryTelemetrySource(config.telemetry.shared_memory_name)
     if config.telemetry.mode == "rest":
@@ -111,9 +118,7 @@ def run_app(config: AppConfig) -> None:
                 dashboard.render(state_queue.get_nowait())
         except Empty:
             pass
-        if stop_event.is_set():
-            dashboard.root.quit()
-        else:
+        if dashboard.root.winfo_exists():
             dashboard.root.after(100, render_pending)
 
     def close_dashboard() -> None:

@@ -4,8 +4,10 @@ from dataclasses import dataclass, field
 
 try:
     import tkinter as tk
+    from tkinter import font as tkfont
 except ImportError:  # pragma: no cover
     tk = None
+    tkfont = None
 
 from lmu_race_engineer.models import Recommendation, VoiceAlert
 
@@ -28,6 +30,8 @@ class RaceEngineerDashboard:
         self.root = tk.Tk()
         self.root.title("LMU Race Engineer")
         self.root.geometry("920x560")
+        self.metric_font = tkfont.nametofont("TkHeadingFont")
+        self.text_font = tkfont.nametofont("TkTextFont")
 
         self.current_lap_var = tk.StringVar(value="-")
         self.delta_var = tk.StringVar(value="-")
@@ -50,7 +54,7 @@ class RaceEngineerDashboard:
         ):
             block = tk.LabelFrame(metrics, text=label, padx=12, pady=12)
             block.grid(row=0, column=idx, padx=6, sticky="nsew")
-            tk.Label(block, textvariable=variable, font=("Arial", 16, "bold"), wraplength=150).pack()
+            tk.Label(block, textvariable=variable, font=self.metric_font, wraplength=150).pack()
             metrics.grid_columnconfigure(idx, weight=1)
 
         body = tk.Frame(self.root, padx=16, pady=12)
@@ -62,7 +66,7 @@ class RaceEngineerDashboard:
         recommendations_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.recommendations_text = tk.Text(
             recommendations,
-            font=("Arial", 12),
+            font=self.text_font,
             wrap=tk.WORD,
             yscrollcommand=recommendations_scrollbar.set,
             state=tk.DISABLED,
@@ -76,7 +80,7 @@ class RaceEngineerDashboard:
         alerts_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.alerts_text = tk.Text(
             alerts,
-            font=("Arial", 12),
+            font=self.text_font,
             wrap=tk.WORD,
             yscrollcommand=alerts_scrollbar.set,
             state=tk.DISABLED,

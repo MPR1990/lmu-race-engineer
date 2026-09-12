@@ -48,6 +48,7 @@ class LapTrackerTest(unittest.TestCase):
         self.assertAlmostEqual(89.5, analysis.last_lap.lap_time_seconds)
         self.assertAlmostEqual(2.5, analysis.last_lap.fuel_used_liters)
         self.assertAlmostEqual(195.0, analysis.last_lap.average_speed_kph)
+        self.assertEqual(170.0, tracker._lap_speed_samples[0])
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ from lmu_race_engineer.config import AppConfig
 from lmu_race_engineer.recommendations import SetupRecommendationEngine
 from lmu_race_engineer.storage import SessionStore
 from lmu_race_engineer.telemetry import DemoTelemetrySource, SharedMemoryTelemetrySource
+from lmu_race_engineer.ui import DashboardState
 
 
 def build_dashboard_state(snapshot, analysis, recommendations, alerts) -> DashboardState:
@@ -33,7 +34,11 @@ def build_dashboard_state(snapshot, analysis, recommendations, alerts) -> Dashbo
 def create_source(config: AppConfig):
     if config.telemetry.mode == "shared_memory":
         return SharedMemoryTelemetrySource(config.telemetry.shared_memory_name)
-    return DemoTelemetrySource()
+    if config.telemetry.mode == "rest":
+        raise NotImplementedError("REST telemetry streaming is not implemented yet.")
+    if config.telemetry.mode == "demo":
+        return DemoTelemetrySource()
+    raise ValueError(f"Unsupported telemetry mode: {config.telemetry.mode}")
 
 
 def run_app(config: AppConfig) -> None:

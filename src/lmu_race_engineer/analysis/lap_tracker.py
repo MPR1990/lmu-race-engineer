@@ -34,8 +34,8 @@ class LapTracker:
         if self._last_lap_number is None:
             self._last_lap_number = snapshot.lap_number
             self._lap_start_fuel = snapshot.fuel_liters
-
-        if snapshot.lap_number != self._last_lap_number and self._last_snapshot is not None:
+            self._lap_speed_samples.append(snapshot.speed_kph)
+        elif snapshot.lap_number != self._last_lap_number and self._last_snapshot is not None:
             self.completed_laps.append(
                 CompletedLap(
                     lap_number=self._last_lap_number,
@@ -46,11 +46,11 @@ class LapTracker:
                     average_speed_kph=sum(self._lap_speed_samples) / max(1, len(self._lap_speed_samples)),
                 )
             )
-            self._lap_speed_samples = []
+            self._lap_speed_samples = [snapshot.speed_kph]
             self._lap_start_fuel = snapshot.fuel_liters
             self._last_lap_number = snapshot.lap_number
-
-        self._lap_speed_samples.append(snapshot.speed_kph)
+        else:
+            self._lap_speed_samples.append(snapshot.speed_kph)
         self._last_snapshot = snapshot
 
         best_lap = min(self.completed_laps, key=lambda lap: lap.lap_time_seconds, default=None)

@@ -17,7 +17,7 @@ This repository now contains the first vertical slice of the app:
 ## Project layout
 
 ```text
-/home/runner/work/lmu-race-engineer/lmu-race-engineer
+.
 ├── pyproject.toml
 ├── src/lmu_race_engineer
 │   ├── alerts
@@ -53,7 +53,7 @@ The current default uses the built-in demo telemetry source so the dashboard and
 The app accepts an optional JSON config file:
 
 ```bash
-python -m lmu_race_engineer.app --config /home/runner/work/lmu-race-engineer/lmu-race-engineer/config.example.json
+python -m lmu_race_engineer.app --config config.example.json
 ```
 
 Supported config sections:
@@ -63,7 +63,7 @@ Supported config sections:
 - `monitoring`: tire, brake, fuel, and pace thresholds
 - `storage_path`: SQLite file location
 
-Use `/home/runner/work/lmu-race-engineer/lmu-race-engineer/config.example.json` as the starting point for your own config.
+Use `config.example.json` as the starting point for your own config.
 
 ## Next implementation targets
 

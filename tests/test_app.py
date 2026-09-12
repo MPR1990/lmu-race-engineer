@@ -4,7 +4,7 @@ import unittest
 
 from lmu_race_engineer.app import create_source
 from lmu_race_engineer.config import AppConfig, TelemetrySourceSettings
-from lmu_race_engineer.telemetry import DemoTelemetrySource, SharedMemoryTelemetrySource
+from lmu_race_engineer.telemetry import DemoTelemetrySource, RestApiTelemetrySource, SharedMemoryTelemetrySource
 
 
 class AppSourceSelectionTest(unittest.TestCase):
@@ -16,10 +16,9 @@ class AppSourceSelectionTest(unittest.TestCase):
         config = AppConfig(telemetry=TelemetrySourceSettings(mode="shared_memory"))
         self.assertIsInstance(create_source(config), SharedMemoryTelemetrySource)
 
-    def test_rest_mode_is_explicitly_not_implemented(self) -> None:
+    def test_rest_mode_returns_rest_source(self) -> None:
         config = AppConfig(telemetry=TelemetrySourceSettings(mode="rest"))
-        with self.assertRaises(NotImplementedError):
-            create_source(config)
+        self.assertIsInstance(create_source(config), RestApiTelemetrySource)
 
     def test_unknown_mode_raises_value_error(self) -> None:
         config = AppConfig(telemetry=TelemetrySourceSettings(mode="unknown"))

@@ -41,6 +41,9 @@ class SessionStore:
         )
         self.connection.commit()
 
+    def close(self) -> None:
+        self.connection.close()
+
     def record_snapshot(self, snapshot: TelemetrySnapshot) -> None:
         self.connection.execute(
             """

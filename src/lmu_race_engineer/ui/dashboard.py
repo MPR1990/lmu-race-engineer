@@ -107,10 +107,8 @@ class RaceEngineerDashboard:
         self._set_text(self.recommendations_text, recommendations)
         self._set_text(self.alerts_text, alerts)
 
-    @staticmethod
-    def _set_text(widget, value: str) -> None:
+    def _set_text(self, widget, value: str) -> None:
         widget.config(state=tk.NORMAL)
         widget.delete("1.0", tk.END)
         widget.insert(tk.END, value)
         widget.config(state=tk.DISABLED)
-        self.root.update()

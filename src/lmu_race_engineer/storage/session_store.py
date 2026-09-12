@@ -11,6 +11,8 @@ class SessionStore:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.connection = sqlite3.connect(self.path)
+        self._pending_writes = 0
+        self._commit_interval = 10
         self._create_tables()
 
     def _create_tables(self) -> None:
@@ -42,6 +44,8 @@ class SessionStore:
         self.connection.commit()
 
     def close(self) -> None:
+        if self._pending_writes:
+            self.connection.commit()
         self.connection.close()
 
     def record_snapshot(self, snapshot: TelemetrySnapshot) -> None:
@@ -58,7 +62,7 @@ class SessionStore:
                 snapshot.speed_kph,
             ),
         )
-        self.connection.commit()
+        self._mark_dirty()
 
     def record_completed_lap(self, lap: CompletedLap) -> None:
         self.connection.execute(
@@ -68,7 +72,7 @@ class SessionStore:
             """,
             (lap.lap_number, lap.lap_time_seconds, lap.fuel_used_liters, lap.average_speed_kph),
         )
-        self.connection.commit()
+        self._mark_dirty()
 
     def record_recommendations(self, recommendations: list[Recommendation]) -> None:
         self.connection.executemany(
@@ -88,4 +92,10 @@ class SessionStore:
                 for recommendation in recommendations
             ],
         )
-        self.connection.commit()
+        self._mark_dirty()
+
+    def _mark_dirty(self) -> None:
+        self._pending_writes += 1
+        if self._pending_writes >= self._commit_interval:
+            self.connection.commit()
+            self._pending_writes = 0

@@ -1,7 +1,11 @@
 from __future__ import annotations
 
-import tkinter as tk
 from dataclasses import dataclass, field
+
+try:
+    import tkinter as tk
+except ImportError:  # pragma: no cover
+    tk = None
 
 from lmu_race_engineer.models import Recommendation, VoiceAlert
 
@@ -19,6 +23,8 @@ class DashboardState:
 
 class RaceEngineerDashboard:
     def __init__(self) -> None:
+        if tk is None:
+            raise RuntimeError("Tkinter is required for the desktop dashboard.")
         self.root = tk.Tk()
         self.root.title("LMU Race Engineer")
         self.root.geometry("920x560")
@@ -48,7 +54,7 @@ class RaceEngineerDashboard:
             block = tk.LabelFrame(metrics, text=label, padx=12, pady=12)
             block.grid(row=0, column=idx, padx=6, sticky="nsew")
             tk.Label(block, textvariable=variable, font=("Arial", 16, "bold"), wraplength=150).pack()
-        metrics.grid_columnconfigure(tuple(range(5)), weight=1)
+            metrics.grid_columnconfigure(idx, weight=1)
 
         body = tk.Frame(self.root, padx=16, pady=12)
         body.pack(fill=tk.BOTH, expand=True)

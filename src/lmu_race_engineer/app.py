@@ -10,7 +10,6 @@ from lmu_race_engineer.config import AppConfig
 from lmu_race_engineer.recommendations import SetupRecommendationEngine
 from lmu_race_engineer.storage import SessionStore
 from lmu_race_engineer.telemetry import DemoTelemetrySource, SharedMemoryTelemetrySource
-from lmu_race_engineer.ui import DashboardState, RaceEngineerDashboard
 
 
 def build_dashboard_state(snapshot, analysis, recommendations, alerts) -> DashboardState:
@@ -38,6 +37,8 @@ def create_source(config: AppConfig):
 
 
 def run_app(config: AppConfig) -> None:
+    from lmu_race_engineer.ui import RaceEngineerDashboard
+
     source = create_source(config)
     tracker = LapTracker()
     engine = SetupRecommendationEngine(config.monitoring)

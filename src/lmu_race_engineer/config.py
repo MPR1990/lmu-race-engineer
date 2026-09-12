@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 
@@ -48,8 +48,8 @@ class AppConfig:
         voice = raw.get("voice", {})
         monitoring = raw.get("monitoring", {})
         return cls(
-            telemetry=TelemetrySourceSettings(**{**config.telemetry.__dict__, **telemetry}),
-            voice=VoiceAlertSettings(**{**config.voice.__dict__, **voice}),
-            monitoring=MonitoringTargets(**{**config.monitoring.__dict__, **monitoring}),
+            telemetry=TelemetrySourceSettings(**{**asdict(config.telemetry), **telemetry}),
+            voice=VoiceAlertSettings(**{**asdict(config.voice), **voice}),
+            monitoring=MonitoringTargets(**{**asdict(config.monitoring), **monitoring}),
             storage_path=raw.get("storage_path", config.storage_path),
         )

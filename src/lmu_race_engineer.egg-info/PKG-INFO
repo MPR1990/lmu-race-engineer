@@ -1,3 +1,11 @@
+Metadata-Version: 2.4
+Name: lmu-race-engineer
+Version: 0.1.0
+Summary: Race engineer desktop app for Le Mans Ultimate telemetry and setup guidance.
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: pyttsx3==2.99
+
 # lmu-race-engineer
 
 Race engineer desktop application for Le Mans Ultimate. It is structured around live telemetry ingestion, lap analysis, setup recommendations, persistence, and real-time voice alerts.
@@ -53,7 +61,7 @@ The current default uses the built-in demo telemetry source so the dashboard and
 The app accepts an optional JSON config file:
 
 ```bash
-python -m lmu_race_engineer.app --config /home/runner/work/lmu-race-engineer/lmu-race-engineer/config.example.json
+python -m lmu_race_engineer.app --config /absolute/path/to/config.json
 ```
 
 Supported config sections:
@@ -62,8 +70,6 @@ Supported config sections:
 - `voice`: enable/disable speech, voice rate, volume, alert cooldown
 - `monitoring`: tire, brake, fuel, and pace thresholds
 - `storage_path`: SQLite file location
-
-Use `/home/runner/work/lmu-race-engineer/lmu-race-engineer/config.example.json` as the starting point for your own config.
 
 ## Next implementation targets
 

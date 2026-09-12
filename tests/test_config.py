@@ -27,6 +27,7 @@ class AppConfigTest(unittest.TestCase):
             config = AppConfig.load(config_path)
 
             self.assertEqual("shared_memory", config.telemetry.mode)
+            self.assertEqual(2.0, config.telemetry.request_timeout_seconds)
             self.assertFalse(config.voice.enabled)
             self.assertEqual(3.5, config.monitoring.fuel_reserve_laps)
             self.assertEqual("custom.sqlite3", config.storage_path)

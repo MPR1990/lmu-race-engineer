@@ -42,7 +42,10 @@ def create_source(config: AppConfig):
         return SharedMemoryTelemetrySource(config.telemetry.shared_memory_name)
     if config.telemetry.mode == "rest":
         return RestApiTelemetrySource(
-            RestApiClient(config.telemetry.rest_api_base_url),
+            RestApiClient(
+                config.telemetry.rest_api_base_url,
+                request_timeout_seconds=config.telemetry.request_timeout_seconds,
+            ),
             poll_interval_seconds=config.telemetry.poll_interval_seconds,
         )
     if config.telemetry.mode == "demo":
@@ -117,7 +120,7 @@ def run_app(config: AppConfig) -> None:
         stop_event.set()
         dashboard.root.quit()
 
-    worker_thread = threading.Thread(target=worker, name="telemetry-worker", daemon=True)
+    worker_thread = threading.Thread(target=worker, name="telemetry-worker")
     dashboard.root.protocol("WM_DELETE_WINDOW", close_dashboard)
     worker_thread.start()
     dashboard.root.after(0, render_pending)
@@ -126,7 +129,7 @@ def run_app(config: AppConfig) -> None:
         dashboard.root.mainloop()
     finally:
         stop_event.set()
-        worker_thread.join(timeout=max(1.0, config.telemetry.poll_interval_seconds * 2))
+        worker_thread.join()
 
 
 def main() -> None:

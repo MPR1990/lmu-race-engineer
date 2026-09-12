@@ -34,9 +34,6 @@ class RaceEngineerDashboard:
         self.fuel_var = tk.StringVar(value="-")
         self.tire_var = tk.StringVar(value="-")
         self.brake_var = tk.StringVar(value="-")
-        self.recommendations_var = tk.StringVar(value="")
-        self.alerts_var = tk.StringVar(value="")
-
         self._build()
 
     def _build(self) -> None:
@@ -61,25 +58,31 @@ class RaceEngineerDashboard:
 
         recommendations = tk.LabelFrame(body, text="Recommendations", padx=12, pady=12)
         recommendations.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 8))
-        tk.Label(
+        recommendations_scrollbar = tk.Scrollbar(recommendations)
+        recommendations_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.recommendations_text = tk.Text(
             recommendations,
-            textvariable=self.recommendations_var,
-            justify=tk.LEFT,
-            anchor="nw",
             font=("Arial", 12),
-            wraplength=420,
-        ).pack(fill=tk.BOTH, expand=True)
+            wrap=tk.WORD,
+            yscrollcommand=recommendations_scrollbar.set,
+            state=tk.DISABLED,
+        )
+        self.recommendations_text.pack(fill=tk.BOTH, expand=True)
+        recommendations_scrollbar.config(command=self.recommendations_text.yview)
 
         alerts = tk.LabelFrame(body, text="Alert History", padx=12, pady=12)
         alerts.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(8, 0))
-        tk.Label(
+        alerts_scrollbar = tk.Scrollbar(alerts)
+        alerts_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.alerts_text = tk.Text(
             alerts,
-            textvariable=self.alerts_var,
-            justify=tk.LEFT,
-            anchor="nw",
             font=("Arial", 12),
-            wraplength=320,
-        ).pack(fill=tk.BOTH, expand=True)
+            wrap=tk.WORD,
+            yscrollcommand=alerts_scrollbar.set,
+            state=tk.DISABLED,
+        )
+        self.alerts_text.pack(fill=tk.BOTH, expand=True)
+        alerts_scrollbar.config(command=self.alerts_text.yview)
 
     def render(self, state: DashboardState) -> None:
         self.current_lap_var.set(state.current_lap_text)
@@ -87,19 +90,27 @@ class RaceEngineerDashboard:
         self.fuel_var.set(state.fuel_text)
         self.tire_var.set(state.tire_text)
         self.brake_var.set(state.brake_text)
-        self.recommendations_var.set(
+        recommendations = (
             "\n\n".join(
                 f"[{item.priority.upper()}] {item.title}\n{item.reason}\nConfidence: {item.confidence:.0%}"
                 for item in state.recommendations[:5]
             )
             or "No recommendations yet."
         )
-        self.alerts_var.set(
+        alerts = (
             "\n\n".join(
                 f"{alert.created_at.strftime('%H:%M:%S')} - {alert.title}\n{alert.message}"
                 for alert in state.alerts[:5]
             )
             or "No alerts triggered."
         )
-        self.root.update_idletasks()
+        self._set_text(self.recommendations_text, recommendations)
+        self._set_text(self.alerts_text, alerts)
+
+    @staticmethod
+    def _set_text(widget, value: str) -> None:
+        widget.config(state=tk.NORMAL)
+        widget.delete("1.0", tk.END)
+        widget.insert(tk.END, value)
+        widget.config(state=tk.DISABLED)
         self.root.update()

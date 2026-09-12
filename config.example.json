@@ -3,7 +3,8 @@
     "mode": "demo",
     "shared_memory_name": "LMUSharedMemory",
     "rest_api_base_url": "http://localhost:6397/api",
-    "poll_interval_seconds": 0.5
+    "poll_interval_seconds": 0.5,
+    "request_timeout_seconds": 2.0
   },
   "voice": {
     "enabled": true,

@@ -49,7 +49,13 @@ class LapTracker:
                     lap_number=self._last_lap_number,
                     lap_time_seconds=self._last_snapshot.lap_time_seconds,
                     fuel_used_liters=max(
-                        0.0, (self._lap_start_fuel or snapshot.fuel_liters) - self._last_snapshot.fuel_liters
+                        0.0,
+                        (
+                            self._lap_start_fuel
+                            if self._lap_start_fuel is not None
+                            else snapshot.fuel_liters
+                        )
+                        - self._last_snapshot.fuel_liters,
                     ),
                     average_speed_kph=sum(self._lap_speed_samples) / max(1, len(self._lap_speed_samples)),
                 )

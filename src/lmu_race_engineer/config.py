@@ -29,6 +29,7 @@ class TelemetrySourceSettings:
     shared_memory_name: str = "LMUSharedMemory"
     rest_api_base_url: str = "http://localhost:6397/api"
     poll_interval_seconds: float = 0.5
+    request_timeout_seconds: float = 2.0
 
 
 @dataclass(slots=True)

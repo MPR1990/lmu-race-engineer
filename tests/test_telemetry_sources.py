@@ -3,7 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 import unittest
 
-from lmu_race_engineer.telemetry import DemoTelemetrySource, RestApiClient, RestApiTelemetrySource
+from lmu_race_engineer.telemetry import (
+    DemoTelemetrySource,
+    RestApiClient,
+    RestApiTelemetrySource,
+    SharedMemoryTelemetrySource,
+)
 
 
 class FakeRestApiClient(RestApiClient):
@@ -66,6 +71,15 @@ class TelemetrySourceTest(unittest.TestCase):
         self.assertEqual(1, second.lap_number)
         self.assertEqual(2, client.calls)
         self.assertEqual([0.4], sleeps)
+
+    def test_shared_memory_source_placeholder_raises_expected_error(self) -> None:
+        source = SharedMemoryTelemetrySource("LMUSharedMemory")
+
+        with self.assertRaisesRegex(
+            NotImplementedError,
+            "Shared memory parsing is not implemented yet. Add the LMU shared memory layout here.",
+        ):
+            next(source.stream())
 
 
 if __name__ == "__main__":

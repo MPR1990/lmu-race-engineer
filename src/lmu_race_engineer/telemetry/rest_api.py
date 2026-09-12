@@ -11,8 +11,9 @@ from lmu_race_engineer.telemetry.base import TelemetrySource
 
 
 class RestApiClient:
-    def __init__(self, base_url: str) -> None:
+    def __init__(self, base_url: str, request_timeout_seconds: float = 2.0) -> None:
         self.base_url = base_url.rstrip("/")
+        self.request_timeout_seconds = request_timeout_seconds
 
     def get_session_summary(self) -> dict[str, str]:
         return self._get_json("/session")
@@ -21,7 +22,7 @@ class RestApiClient:
         return self._get_json("/telemetry/live")
 
     def _get_json(self, path: str) -> dict[str, object]:
-        with urlopen(f"{self.base_url}{path}") as response:
+        with urlopen(f"{self.base_url}{path}", timeout=self.request_timeout_seconds) as response:
             return json.loads(response.read().decode("utf-8"))
 
 

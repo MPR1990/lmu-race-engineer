@@ -58,7 +58,7 @@ python -m lmu_race_engineer.app --config config.example.json
 
 Supported config sections:
 
-- `telemetry`: source mode, shared memory name, REST base URL, poll interval
+- `telemetry`: source mode, shared memory name, REST base URL, poll interval, request timeout
 - `voice`: enable/disable speech, voice rate, volume, alert cooldown
 - `monitoring`: tire, brake, fuel, and pace thresholds
 - `storage_path`: SQLite file location

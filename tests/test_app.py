@@ -30,12 +30,14 @@ class AppSourceSelectionTest(unittest.TestCase):
                 mode="rest",
                 rest_api_base_url="http://localhost:5000/api",
                 poll_interval_seconds=0.4,
+                request_timeout_seconds=3.0,
             )
         )
         source = create_source(config)
 
         self.assertIsInstance(source, RestApiTelemetrySource)
         self.assertEqual("http://localhost:5000/api", source.client.base_url)
+        self.assertEqual(3.0, source.client.request_timeout_seconds)
         self.assertEqual(0.4, source.poll_interval_seconds)
 
     def test_unknown_mode_raises_value_error(self) -> None:

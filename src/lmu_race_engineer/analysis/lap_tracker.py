@@ -43,6 +43,7 @@ class LapTracker:
             self._last_snapshot = snapshot
             return self._build_analysis(snapshot)
         elif snapshot.lap_number != self._last_lap_number and self._last_snapshot is not None:
+            new_lap_start_fuel = self._last_snapshot.fuel_liters
             self.completed_laps.append(
                 CompletedLap(
                     lap_number=self._last_lap_number,
@@ -54,7 +55,7 @@ class LapTracker:
                 )
             )
             self._lap_speed_samples = [snapshot.speed_kph]
-            self._lap_start_fuel = snapshot.fuel_liters
+            self._lap_start_fuel = new_lap_start_fuel
             self._last_lap_number = snapshot.lap_number
         else:
             self._lap_speed_samples.append(snapshot.speed_kph)

@@ -59,7 +59,6 @@ def run_app(config: AppConfig) -> None:
     alerts = AlertManager(config.voice.cooldown_seconds)
     voice = VoiceAlertEngine(config.voice)
     dashboard = RaceEngineerDashboard()
-    store = SessionStore(config.storage_path)
     last_recorded_lap = 0
     last_saved_recommendations: tuple[tuple[str, str, str, float, str, str], ...] = ()
     state_queue: Queue[DashboardState] = Queue()
@@ -67,6 +66,7 @@ def run_app(config: AppConfig) -> None:
 
     def worker() -> None:
         nonlocal last_recorded_lap, last_saved_recommendations
+        store = SessionStore(config.storage_path)
         try:
             for snapshot in source.stream():
                 if stop_event.is_set():
@@ -99,6 +99,7 @@ def run_app(config: AppConfig) -> None:
                     last_saved_recommendations = ()
                 state_queue.put(build_dashboard_state(snapshot, analysis, recommendations, alerts.history))
         finally:
+            store.close()
             stop_event.set()
 
     def render_pending() -> None:
@@ -126,7 +127,6 @@ def run_app(config: AppConfig) -> None:
     finally:
         stop_event.set()
         worker_thread.join(timeout=max(1.0, config.telemetry.poll_interval_seconds * 2))
-        store.close()
 
 
 def main() -> None:

@@ -50,6 +50,17 @@ class LapTrackerTest(unittest.TestCase):
         self.assertAlmostEqual(195.0, analysis.last_lap.average_speed_kph)
         self.assertEqual(170.0, tracker._lap_speed_samples[0])
 
+    def test_resets_when_lap_counter_moves_backward(self) -> None:
+        tracker = LapTracker()
+
+        tracker.update(snapshot(5, 80.0, 60.0, 200.0))
+        analysis = tracker.update(snapshot(1, 2.0, 59.5, 150.0))
+
+        self.assertIsNone(analysis.last_lap)
+        self.assertEqual([], tracker.completed_laps)
+        self.assertEqual(1, analysis.current_lap_number)
+        self.assertEqual([150.0], tracker._lap_speed_samples)
+
 
 if __name__ == "__main__":
     unittest.main()

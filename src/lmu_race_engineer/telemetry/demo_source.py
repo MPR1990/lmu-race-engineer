@@ -1,21 +1,32 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
+import time
 
 from lmu_race_engineer.models import TelemetrySnapshot
 from lmu_race_engineer.telemetry.base import TelemetrySource
 
 
 class DemoTelemetrySource(TelemetrySource):
-    def __init__(self, samples: int = 180, lap_time_seconds: float = 90.0) -> None:
+    def __init__(
+        self,
+        samples: int = 180,
+        lap_time_seconds: float = 90.0,
+        poll_interval_seconds: float = 0.5,
+        sleep_func=None,
+    ) -> None:
         self.samples = samples
         self.lap_time_seconds = lap_time_seconds
+        self.poll_interval_seconds = poll_interval_seconds
+        self.sleep_func = sleep_func or time.sleep
 
     def stream(self) -> Iterator[TelemetrySnapshot]:
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
         fuel = 92.0
         for index in range(self.samples):
+            if index > 0:
+                self.sleep_func(self.poll_interval_seconds)
             lap_number = index // 30 + 1
             lap_progress = (index % 30) / 30
             lap_time = lap_progress * self.lap_time_seconds

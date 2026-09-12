@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import time
 from pathlib import Path
 
 from lmu_race_engineer.alerts import AlertManager, VoiceAlertEngine
@@ -40,9 +39,12 @@ def create_source(config: AppConfig):
     if config.telemetry.mode == "shared_memory":
         return SharedMemoryTelemetrySource(config.telemetry.shared_memory_name)
     if config.telemetry.mode == "rest":
-        return RestApiTelemetrySource(RestApiClient(config.telemetry.rest_api_base_url))
+        return RestApiTelemetrySource(
+            RestApiClient(config.telemetry.rest_api_base_url),
+            poll_interval_seconds=config.telemetry.poll_interval_seconds,
+        )
     if config.telemetry.mode == "demo":
-        return DemoTelemetrySource()
+        return DemoTelemetrySource(poll_interval_seconds=config.telemetry.poll_interval_seconds)
     raise ValueError(f"Unsupported telemetry mode: {config.telemetry.mode}")
 
 
@@ -72,7 +74,6 @@ def run_app(config: AppConfig) -> None:
             if recommendations:
                 store.record_recommendations(recommendations)
             dashboard.render(build_dashboard_state(snapshot, analysis, recommendations, alerts.history))
-            time.sleep(config.telemetry.poll_interval_seconds)
     finally:
         store.close()
 

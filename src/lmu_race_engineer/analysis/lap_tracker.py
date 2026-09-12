@@ -35,6 +35,12 @@ class LapTracker:
             self._last_lap_number = snapshot.lap_number
             self._lap_start_fuel = snapshot.fuel_liters
             self._lap_speed_samples.append(snapshot.speed_kph)
+        elif snapshot.lap_number < self._last_lap_number:
+            self._last_lap_number = snapshot.lap_number
+            self._lap_start_fuel = snapshot.fuel_liters
+            self._lap_speed_samples = [snapshot.speed_kph]
+            self._last_snapshot = snapshot
+            return self._build_analysis(snapshot)
         elif snapshot.lap_number != self._last_lap_number and self._last_snapshot is not None:
             self.completed_laps.append(
                 CompletedLap(
@@ -53,6 +59,9 @@ class LapTracker:
             self._lap_speed_samples.append(snapshot.speed_kph)
         self._last_snapshot = snapshot
 
+        return self._build_analysis(snapshot)
+
+    def _build_analysis(self, snapshot: TelemetrySnapshot) -> AnalysisSnapshot:
         best_lap = min(self.completed_laps, key=lambda lap: lap.lap_time_seconds, default=None)
         last_lap = self.completed_laps[-1] if self.completed_laps else None
         rolling = None

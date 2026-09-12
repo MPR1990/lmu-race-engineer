@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from collections.abc import Iterator
 from datetime import datetime
+import time
 from urllib.request import urlopen
 
 from lmu_race_engineer.models import TelemetrySnapshot
@@ -25,11 +26,17 @@ class RestApiClient:
 
 
 class RestApiTelemetrySource(TelemetrySource):
-    def __init__(self, client: RestApiClient) -> None:
+    def __init__(self, client: RestApiClient, poll_interval_seconds: float = 0.5, sleep_func=None) -> None:
         self.client = client
+        self.poll_interval_seconds = poll_interval_seconds
+        self.sleep_func = sleep_func or time.sleep
 
     def stream(self) -> Iterator[TelemetrySnapshot]:
+        first_sample = True
         while True:
+            if not first_sample:
+                self.sleep_func(self.poll_interval_seconds)
+            first_sample = False
             payload = self.client.get_live_telemetry()
             yield TelemetrySnapshot(
                 timestamp=datetime.fromisoformat(str(payload["timestamp"])),

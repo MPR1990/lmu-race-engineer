@@ -96,14 +96,19 @@ class RaceEngineerDashboard:
         self.brake_var.set(state.brake_text)
         recommendations = (
             "\n\n".join(
-                f"[{item.priority.upper()}] {item.title}\n{item.reason}\nConfidence: {item.confidence:.0%}"
+                f"[{item.priority.upper()}] {item.title}\n"
+                f"{item.reason}\n"
+                f"Action: {item.action_timing.replace('_', ' ')}\n"
+                f"Confidence: {item.confidence:.0%}"
                 for item in state.recommendations[:5]
             )
             or "No recommendations yet."
         )
         alerts = (
             "\n\n".join(
-                f"{alert.created_at.strftime('%H:%M:%S')} - {alert.title}\n{alert.message}"
+                f"{alert.created_at.strftime('%H:%M:%S')} - {alert.title} [{alert.priority.upper()}]"
+                f"{f' - Lap {alert.lap_number}' if alert.lap_number is not None else ''}\n"
+                f"{alert.message}"
                 for alert in state.alerts[:5]
             )
             or "No alerts triggered."

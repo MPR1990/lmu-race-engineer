@@ -1,0 +1,10 @@
+^E:\RACING\LMU\LMU-RACE-ENGINEER\NATIVE_PLUGIN\CMAKELISTS.TXT
+setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SE:/Racing/LMU/lmu-race-engineer/native_plugin -BE:/Racing/LMU/lmu-race-engineer/build/native --check-stamp-file E:/Racing/LMU/lmu-race-engineer/build/native/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

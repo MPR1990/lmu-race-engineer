@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lmu_race_engineer.analysis import AnalysisSnapshot
+from lmu_race_engineer.analysis import AnalysisSnapshot, HandlingAssessment
 from lmu_race_engineer.config import MonitoringTargets
 from lmu_race_engineer.models import CompletedLap, TelemetrySnapshot
 from lmu_race_engineer.recommendations import SetupRecommendationEngine
@@ -9,6 +9,61 @@ import unittest
 
 
 class RecommendationEngineTest(unittest.TestCase):
+    def test_braking_assessment_suppresses_exit_oversteer_recommendation(self) -> None:
+        engine = SetupRecommendationEngine(MonitoringTargets())
+        snapshot = TelemetrySnapshot(
+            timestamp=datetime(2026, 1, 1, 12, 0, 0),
+            lap_number=6,
+            lap_distance_fraction=0.5,
+            lap_time_seconds=50.0,
+            best_lap_time_seconds=90.0,
+            speed_kph=120.0,
+            fuel_liters=40.0,
+            tire_temperatures_c={
+                "front_left": 85.0,
+                "front_right": 85.0,
+                "rear_left": 102.0,
+                "rear_right": 103.0,
+            },
+            tire_pressures_kpa={},
+            brake_temperatures_c={"front": 600.0, "rear": 500.0},
+            traction_control_level=4,
+            abs_level=5,
+            brake_bias_percent=54.0,
+        )
+        analysis = AnalysisSnapshot(
+            current_lap_number=6,
+            current_lap_time_seconds=50.0,
+            current_delta_to_best_seconds=None,
+            last_lap=None,
+            best_lap=None,
+            rolling_average_lap_seconds=None,
+            estimated_laps_remaining=None,
+            rear_tire_temp_avg_c=102.5,
+            front_tire_temp_avg_c=85.0,
+            front_brake_temp_c=600.0,
+            rear_brake_temp_c=500.0,
+            traction_event_count=0,
+            lockup_event_count=1,
+        )
+
+        recommendations = engine.evaluate(
+            snapshot,
+            analysis,
+            HandlingAssessment(
+                phase="braking",
+                condition="braking_instability",
+                confidence=0.6,
+                evidence=("rear tires are 17.5C hotter during braking",),
+                evidence_count=3,
+                grip_data_available=False,
+            ),
+        )
+
+        titles = {item.title for item in recommendations}
+        self.assertNotIn("Rear tires overheating", titles)
+        self.assertIn("Braking instability detected", titles)
+
     def test_generates_live_and_pit_actions_for_hot_rears_and_fuel_risk(self) -> None:
         engine = SetupRecommendationEngine(MonitoringTargets())
         snapshot = TelemetrySnapshot(

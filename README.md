@@ -12,7 +12,7 @@ This repository now contains the first vertical slice of the app:
 - demo telemetry stream for development
 - lap tracking and fuel projection
 - rule-based live and pit recommendation engine
-- SQLite-backed session storage
+- SQLite-backed session storage for telemetry, laps, recommendations, and alerts
 
 ## Project layout
 
@@ -47,6 +47,16 @@ python -m lmu_race_engineer.app
 ```
 
 The current default uses the built-in demo telemetry source so the dashboard and alert flow can be exercised without a live game connection.
+
+For the native LMU plugin telemetry path, use:
+
+```bash
+python -m lmu_race_engineer.app --config config.native.json
+```
+
+Recommendations and high-priority alerts are stored in the configured SQLite
+database. Records include their timestamp and lap number so they can be
+reviewed after a session.
 
 ## Configuration
 

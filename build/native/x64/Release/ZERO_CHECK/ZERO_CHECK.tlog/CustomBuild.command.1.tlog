@@ -1,0 +1,10 @@
+^E:\RACING\LMU\LMU-RACE-ENGINEER\BUILD\NATIVE\CMAKEFILES\CCBCBE7C915B8E28DE989E0AE07F5420\GENERATE.STAMP.RULE
+setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SE:/Racing/LMU/lmu-race-engineer/native_plugin -BE:/Racing/LMU/lmu-race-engineer/build/native --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file E:/Racing/LMU/lmu-race-engineer/build/native/lmu_race_engineer_plugin.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

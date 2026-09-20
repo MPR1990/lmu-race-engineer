@@ -5,7 +5,7 @@ from queue import Empty, Queue
 import threading
 from pathlib import Path
 
-from lmu_race_engineer.analysis import AnalysisSnapshot, LapTracker
+from lmu_race_engineer.analysis import AnalysisSnapshot, HandlingAnalyzer, LapTracker
 from lmu_race_engineer.alerts import AlertManager, VoiceAlertEngine
 from lmu_race_engineer.config import AppConfig
 from lmu_race_engineer.models import Recommendation, TelemetrySnapshot, VoiceAlert
@@ -65,6 +65,7 @@ def run_app(config: AppConfig) -> None:
 
     source = create_source(config)
     tracker = LapTracker()
+    handling_analyzer = HandlingAnalyzer()
     engine = SetupRecommendationEngine(config.monitoring)
     alerts = AlertManager(config.voice.cooldown_seconds)
     voice = VoiceAlertEngine(config.voice)
@@ -82,10 +83,16 @@ def run_app(config: AppConfig) -> None:
                 if stop_event.is_set():
                     break
                 analysis = tracker.update(snapshot)
-                recommendations = engine.evaluate(snapshot, analysis)
-                fresh_alerts = alerts.build_alerts(recommendations, snapshot.timestamp)
+                handling = handling_analyzer.update(snapshot)
+                recommendations = engine.evaluate(snapshot, analysis, handling)
+                fresh_alerts = alerts.build_alerts(
+                    recommendations,
+                    snapshot.timestamp,
+                    lap_number=snapshot.lap_number,
+                )
                 for alert in fresh_alerts:
                     voice.announce(alert)
+                store.record_alerts(fresh_alerts)
                 store.record_snapshot(snapshot)
                 if analysis.last_lap is not None and analysis.last_lap.lap_number > last_recorded_lap:
                     store.record_completed_lap(analysis.last_lap)
@@ -103,7 +110,11 @@ def run_app(config: AppConfig) -> None:
                         for item in recommendations
                     )
                     if current_recommendations != last_saved_recommendations:
-                        store.record_recommendations(recommendations)
+                        store.record_recommendations(
+                            recommendations,
+                            observed_at=snapshot.timestamp,
+                            lap_number=snapshot.lap_number,
+                        )
                         last_saved_recommendations = current_recommendations
                 else:
                     last_saved_recommendations = ()

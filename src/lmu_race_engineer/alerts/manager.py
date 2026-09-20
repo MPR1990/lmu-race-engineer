@@ -11,7 +11,12 @@ class AlertManager:
         self.history: list[VoiceAlert] = []
         self._last_sent_at: dict[str, datetime] = {}
 
-    def build_alerts(self, recommendations: list[Recommendation], now: datetime) -> list[VoiceAlert]:
+    def build_alerts(
+        self,
+        recommendations: list[Recommendation],
+        now: datetime,
+        lap_number: int | None = None,
+    ) -> list[VoiceAlert]:
         alerts: list[VoiceAlert] = []
         for recommendation in recommendations:
             if recommendation.priority != "high" or recommendation.category != "live":
@@ -24,6 +29,7 @@ class AlertManager:
                 message=recommendation.reason,
                 priority="high",
                 created_at=now,
+                lap_number=lap_number,
             )
             self._last_sent_at[recommendation.title] = now
             self.history.insert(0, alert)
